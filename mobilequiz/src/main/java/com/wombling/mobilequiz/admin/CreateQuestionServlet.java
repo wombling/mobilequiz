@@ -68,7 +68,7 @@ public class CreateQuestionServlet {
 
 				questionService.createNewQuestion(newQuestion, rootUrl);
 
-				response.sendRedirect(rootUrl + "/b/" + ApiValues.GET_QUESTION);
+				response.sendRedirect(rootUrl + "/b" + ApiValues.GET_QUESTION);
 
 			}
 

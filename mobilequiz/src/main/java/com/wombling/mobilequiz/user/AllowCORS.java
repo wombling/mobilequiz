@@ -5,14 +5,18 @@ import javax.servlet.http.HttpServletResponse;
 
 public class AllowCORS {
 
-	public static void addCORSHeaders(HttpServletRequest request, HttpServletResponse response, String allowedVerbs)
-	{
-		response.addHeader("Access-Control-Allow-Origin", "*");
-		response.addHeader("Access-Control-Allow-Methods", allowedVerbs +", OPTIONS");  
-		String requestCORSHeaders = request.getHeader("Access-Control-Request-Headers");
-	    if (requestCORSHeaders != null)
-	    {
-	    	response.addHeader("Access-Control-Allow-Headers", requestCORSHeaders);
-	    }
+	public static void addCORSHeaders(HttpServletRequest request,
+			HttpServletResponse response, String allowedVerbs) {
+		String origin = request.getHeader("Origin");
+		response.addHeader("Access-Control-Allow-Origin", origin);
+		response.addHeader("Access-Control-Allow-Credentials", "true");
+		response.addHeader("Access-Control-Allow-Methods", allowedVerbs
+				+ ", OPTIONS");
+		String requestCORSHeaders = request
+				.getHeader("Access-Control-Request-Headers");
+		if (requestCORSHeaders != null) {
+			response.addHeader("Access-Control-Allow-Headers",
+					requestCORSHeaders);
+		}
 	}
 }

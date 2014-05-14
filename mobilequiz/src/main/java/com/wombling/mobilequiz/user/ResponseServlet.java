@@ -56,6 +56,10 @@ public class ResponseServlet {
 
 			response.getWriter().println(gson.toJson(questionResponse));
 			response.setContentType("application/json");
+			response.setHeader("Cache-Control", "no-transform"); // needed for
+																	// chrome
+																	// data
+																	// compression
 
 		} catch (QuestionNotValidException e) {
 

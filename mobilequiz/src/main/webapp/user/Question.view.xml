@@ -1,0 +1,30 @@
+<core:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m" controllerName="user.Question" xmlns:html="http://www.w3.org/1999/xhtml">
+	<Page id="userQuestions" title="Mobile Quiz for Mastering SAP HR">
+		<content>
+			<BusyIndicator id="busyInd" title="Checking Device Support"
+				showCancelButton="false" text="checking if device supports shake"
+				visible="{cfg>/showLoadingThingy}" />
+			<Text id="shakeText" text="Shake your phone to get next question"
+				visible="{cfg>/shakeSupported}" />
+
+			<Button id="noShakeButton" text="Get Next Question" type="Emphasized"
+				visible="{cfg>/shakeNotSupported}" press="fnGetNextQuestion" />
+
+			<ScrollContainer id="questionBox" visible="{cfg>/showQuestion}"
+				horizontal="false" vertical="false">
+				<Text id="questionText" text="{question>/questionText}" />
+				<Text id="secondsToExpiryLabel" text="Time remaining to vote"
+					textAlign="Center" />
+				<Text id="secondsToExpiry" text="{question>/secondsRemaining}" />
+				<ScrollContainer id="buttonBox" horizontal="false"
+					vertical="false">
+					<Button id="yesButton" text="Yes" icon="sap-icon://accept"
+						press="fnVoteYes" type="Accept" />
+					<Button id="noButton" text="No" icon="sap-icon://decline"
+						press="fnVoteNo" type="Reject" />
+				</ScrollContainer>
+			</ScrollContainer>
+		</content>
+	</Page>
+</core:View>
