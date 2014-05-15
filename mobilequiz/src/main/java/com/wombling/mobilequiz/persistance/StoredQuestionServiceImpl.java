@@ -150,6 +150,9 @@ public class StoredQuestionServiceImpl implements StoredQuestionService {
 			results.setQuestionText(sq.getText());
 			results.setYesVotes(sq.getYesVotes());
 			results.setDateTimeCreated(sq.getTimeCreated());
+			results.setId(sq.getId());
+			Question question = convertToQuestion(sq);
+			results.setSecondsRemaining(question.getSecondsRemaining());
 			questions.add(results);
 		}
 		return list;
@@ -167,6 +170,30 @@ public class StoredQuestionServiceImpl implements StoredQuestionService {
 	@Override
 	public List<Responses> getAllResponses() {
 		return responsesDAO.findAll();
+	}
+
+	@Override
+	public QuestionWithResults getQuestionWithResultsFromId(String id) {
+		QuestionWithResults results = new QuestionWithResults();
+
+		StoredQuestion sq = storedDAO.findById(id);
+		if (sq != null) {
+			results.setCurrentQuestion(sq.isCurrent());
+			results.setNoVotes(sq.getNoVotes());
+			results.setQuestionText(sq.getText());
+			results.setYesVotes(sq.getYesVotes());
+			results.setDateTimeCreated(sq.getTimeCreated());
+			results.setId(sq.getId());
+			Question question = convertToQuestion(sq);
+			results.setSecondsRemaining(question.getSecondsRemaining());
+		}
+		return results;
+
+	}
+
+	@Override
+	public void deleteQuestionById(String id) {
+		storedDAO.delete(id);
 	}
 
 }

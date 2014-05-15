@@ -1,0 +1,36 @@
+<core:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m" controllerName="admin.admin" xmlns:html="http://www.w3.org/1999/xhtml">
+	<Page title="Quiz Admin">
+		<content>
+			<Bar>
+				<contentRight>
+					<Button text="Create Question" icon="sap-icon://create"
+						press="fnCreateQuestion" />
+				</contentRight>
+			</Bar>
+			<html:div id="chartContainer">
+				<html:svg id="chart" height="0px"></html:svg>
+			</html:div>
+			<List items="{/questionList}">
+				<headerToolbar>
+					<Toolbar>
+						<Label text="Questions" />
+						<ToolbarSpacer />
+						<Button icon="sap-icon://refresh" press="fnRefresh" />
+					</Toolbar>
+				</headerToolbar>
+				<CustomListItem selected="{currentQuestion}">
+					<Text class="questionText" text="{questionText}" />
+					<Text class="yesVotesLabel" text="Yes Votes:" />
+					<Text class="yesVotes" text="{yesVotes}" />
+					<Text class="noVotesLabel" text="No Votes:" />
+					<Text class="noVotes" text="{noVotes}" />
+					<Text class="secondsRemaining" text="{secondsRemaining}" />
+					<Button class="deleteQuestion" icon="sap-icon://delete"
+						press="fnDeleteQuestion" />
+					<Button class="showGraph" icon="sap-icon://bar-chart" press="fnShowGraph" />
+				</CustomListItem>
+			</List>
+		</content>
+	</Page>
+</core:View>

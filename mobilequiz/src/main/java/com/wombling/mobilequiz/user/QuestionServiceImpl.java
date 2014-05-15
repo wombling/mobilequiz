@@ -1,5 +1,6 @@
 package com.wombling.mobilequiz.user;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +10,14 @@ import org.springframework.stereotype.Service;
 import com.wombling.mobilequiz.api.ApiValues;
 import com.wombling.mobilequiz.exceptions.AlreadyVotedException;
 import com.wombling.mobilequiz.exceptions.NoCurrentQuestionException;
+import com.wombling.mobilequiz.exceptions.QuestionNotFoundException;
 import com.wombling.mobilequiz.exceptions.QuestionNotValidException;
 import com.wombling.mobilequiz.persistance.Responses;
 import com.wombling.mobilequiz.persistance.StoredQuestionService;
 import com.wombling.mobilequiz.pojo.Question;
 import com.wombling.mobilequiz.pojo.QuestionList;
 import com.wombling.mobilequiz.pojo.QuestionResponse;
+import com.wombling.mobilequiz.pojo.QuestionWithResults;
 
 @Service
 @Primary
@@ -76,9 +79,19 @@ public class QuestionServiceImpl implements QuestionService {
 	}
 
 	@Override
-	public QuestionList getAllQuestions() {
+	public QuestionList getAllQuestions(String rootUrl) {
 
 		QuestionList list = sqService.getAllQuestions();
+
+		Iterator<QuestionWithResults> listIter = list.getQuestionList()
+				.iterator();
+
+		while (listIter.hasNext()) {
+			QuestionWithResults question = listIter.next();
+
+			question.setResourceLink(rootUrl + ApiValues.GET_QUESTION_DETAILS
+					+ "/" + question.getId());
+		}
 
 		return list;
 	}
@@ -86,6 +99,28 @@ public class QuestionServiceImpl implements QuestionService {
 	@Override
 	public List<Responses> getAllResponses() {
 		return sqService.getAllResponses();
+	}
+
+	@Override
+	public QuestionWithResults getQuestionById(String id, String rootUrl)
+			throws QuestionNotFoundException {
+
+		QuestionWithResults question = sqService
+				.getQuestionWithResultsFromId(id);
+
+		if (question == null) {
+			throw new QuestionNotFoundException();
+		}
+
+		return question;
+	}
+
+	@Override
+	public void deleteQuestion(QuestionWithResults question)
+			throws QuestionNotFoundException {
+
+         sqService.deleteQuestionById(question.getId());
+		
 	}
 
 }

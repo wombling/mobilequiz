@@ -9,6 +9,9 @@ public class QuestionWithResults {
 	private int yesVotes;
 	private int noVotes;
 	private Date dateTimeCreated;
+	private String resourceLink;
+	private int secondsRemaining;
+	private String id;
 
 	public String getQuestionText() {
 		return questionText;
@@ -48,6 +51,30 @@ public class QuestionWithResults {
 
 	public void setDateTimeCreated(Date dateTimeCreated) {
 		this.dateTimeCreated = dateTimeCreated;
+	}
+
+	public String getResourceLink() {
+		return resourceLink;
+	}
+
+	public void setResourceLink(String resourceLink) {
+		this.resourceLink = resourceLink;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public int getSecondsRemaining() {
+		return secondsRemaining;
+	}
+
+	public void setSecondsRemaining(int secondsRemaining) {
+		this.secondsRemaining = secondsRemaining;
 	}
 
 }

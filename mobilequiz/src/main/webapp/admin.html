@@ -1,10 +1,35 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
 <head>
-<meta charset="ISO-8859-1">
-<title>Mobile Quiz Admin Page</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv='Content-Type' content='text/html;charset=UTF-8' />
+
+<script src="admin/d3.v3.min.js"></script>
+<script src="http://www.wombling.com/openui5/resources/sap-ui-core.js"
+	id="sap-ui-bootstrap" data-sap-ui-libs="sap.m"
+	data-sap-ui-theme="sap_bluecrystal">
+	
+</script>
+<link rel="stylesheet" href="admin/admin.css" />
+
+
+<script>
+	sap.ui.localResources("admin");
+	var app = new sap.m.App({
+		initialPage : "admin"
+	});
+	var page = sap.ui.view({
+		id : "admin",
+		viewName : "admin.admin",
+		type : sap.ui.core.mvc.ViewType.XML
+	});
+	app.addPage(page);
+	app.placeAt("content");
+</script>
+
+
 </head>
-<body>
-<h1>Admin Page</h1>
+<body class="sapUiBody" role="application">
+	<div id="content"></div>
 </body>
 </html>

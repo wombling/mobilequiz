@@ -5,6 +5,7 @@ import java.util.List;
 import com.wombling.mobilequiz.pojo.Question;
 import com.wombling.mobilequiz.pojo.QuestionList;
 import com.wombling.mobilequiz.pojo.QuestionResponse;
+import com.wombling.mobilequiz.pojo.QuestionWithResults;
 
 public interface StoredQuestionService {
 
@@ -21,4 +22,8 @@ public interface StoredQuestionService {
 	public boolean hasUserSubmittedForQuestion(String questionId, String userId);
 	
 	public List<Responses> getAllResponses();
+	
+	public QuestionWithResults getQuestionWithResultsFromId(String id);
+
+	public void deleteQuestionById(String id);
 }

@@ -4,11 +4,12 @@ public class ApiValues {
 
 	public static final String GET_QUESTION = "/getQuestion";
 	public static final String RESPONSE = "/questionResponse";
-	
+
 	public static final String CREATE_QUESTION = "/createQuestion";
 	public static final String GET_QUESTION_LIST = "/listQuestions";
 	public static final String GET_ALL_RESPONSES = "/listResponses";
-	
+	public static final String GET_QUESTION_DETAILS = "/detailedQuestion";
+
 	public static final String YES_RESPONSE = "YES";
 	public static final String NO_RESPONSE = "NO";
 

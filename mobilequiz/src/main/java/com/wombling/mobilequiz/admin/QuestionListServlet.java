@@ -44,7 +44,7 @@ public class QuestionListServlet {
 			String rootUrl = myURL.substring(0,
 					myURL.lastIndexOf(ApiValues.GET_QUESTION_LIST));
 
-			QuestionList questionList = questionService.getAllQuestions();
+			QuestionList questionList = questionService.getAllQuestions(rootUrl);
 
 			response.getWriter().println(gson.toJson(questionList));
 			response.setContentType("application/json");
