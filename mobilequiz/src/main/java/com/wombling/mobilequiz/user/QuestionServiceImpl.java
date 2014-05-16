@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import com.wombling.mobilequiz.admin.QuestionsWebSocket;
 import com.wombling.mobilequiz.api.ApiValues;
 import com.wombling.mobilequiz.exceptions.AlreadyVotedException;
 import com.wombling.mobilequiz.exceptions.NoCurrentQuestionException;
@@ -57,6 +58,9 @@ public class QuestionServiceImpl implements QuestionService {
 				if (!sqService.hasUserSubmittedForQuestion(question.getId(),
 						userId)) {
 					sqService.addVoteToQuestion(questionResponse, userId);
+
+					// inform everyone that question has updated
+					QuestionsWebSocket.sendUpdate(this);
 				} else {
 					throw new AlreadyVotedException();
 				}
@@ -119,8 +123,8 @@ public class QuestionServiceImpl implements QuestionService {
 	public void deleteQuestion(QuestionWithResults question)
 			throws QuestionNotFoundException {
 
-         sqService.deleteQuestionById(question.getId());
-		
+		sqService.deleteQuestionById(question.getId());
+
 	}
 
 }

@@ -37,6 +37,11 @@ span.noVotes {
 	margin-right: 5px;
 }
 
+span.secondsRemaining {
+	margin-right: 5px;
+	font-family: monospace;
+}
+
 .bar-Yes {
 	fill: rgb(165, 255, 136);
 }
@@ -54,7 +59,7 @@ span.noVotes {
 }
 
 .axis {
-	font: 10px sans-serif;
+	font: 24px sans-serif;
 }
 
 .axis path,.axis line {
@@ -65,4 +70,17 @@ span.noVotes {
 
 .x.axis path {
 	display: none;
+}
+
+div#admin--chartContainer {
+	margin-top: 20px;
+	margin-left: 40px;
+}
+
+div#QuestionTextInput {
+	width: 100%;
+}
+
+svg#admin--chart {
+	padding-left: 40px;
 }

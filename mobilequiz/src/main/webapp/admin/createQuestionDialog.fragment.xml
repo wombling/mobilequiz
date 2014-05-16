@@ -1,0 +1,16 @@
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<Dialog title="Create Question" type="Standard">
+		<Label id="QuestionTextLabel" labelFor="QuestionTextInput" text="Question" />
+		<TextArea id="QuestionTextInput" rows="10" value="{/questionText}" />
+		<Label id="SecondsToExpireLabel" labelFor="SecondsToExpireInput"
+			text="Seconds until question expires" />
+		<Input id="SecondsToExpireInput" type="Number" value="{/secondsUntilExpiry}" />
+		<beginButton>
+			<Button text="Cancel" icon="sap-icon://decline" press="fnCloseDialog" />
+		</beginButton>
+		<endButton>
+			<Button text="Save" icon="sap-icon://save" press="fnSaveQuestion" />
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

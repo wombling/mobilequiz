@@ -15,8 +15,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.wombling.mobilequiz.api.ApiValues;
 import com.wombling.mobilequiz.exceptions.QuestionNotFoundException;
-import com.wombling.mobilequiz.exceptions.QuestionNotValidException;
-import com.wombling.mobilequiz.pojo.QuestionList;
 import com.wombling.mobilequiz.pojo.QuestionWithResults;
 import com.wombling.mobilequiz.user.AllowCORS;
 import com.wombling.mobilequiz.user.QuestionService;

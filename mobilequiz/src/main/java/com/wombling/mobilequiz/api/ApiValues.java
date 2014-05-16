@@ -10,6 +10,8 @@ public class ApiValues {
 	public static final String GET_ALL_RESPONSES = "/listResponses";
 	public static final String GET_QUESTION_DETAILS = "/detailedQuestion";
 
+	public static final String QUESTIONS_WEBSOCKET = "/questionWebSocket";
+
 	public static final String YES_RESPONSE = "YES";
 	public static final String NO_RESPONSE = "NO";
 

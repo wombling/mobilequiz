@@ -15,6 +15,12 @@ sap.ui.controller("admin.admin", {
 		this.getView().setModel(questionModel);
 		this.fnRefresh();
 
+		this.createQuestionDialog = sap.ui.xmlfragment("admin.createQuestionDialog", this);
+		this.getView().addDependent(this.createQuestionDialog);
+
+		var createQuestionModel = new sap.ui.model.json.JSONModel({});
+		this.createQuestionDialog.setModel(createQuestionModel);
+
 	},
 	/**
 	 * Similar to onAfterRendering, but this hook is invoked before the
@@ -61,10 +67,10 @@ sap.ui.controller("admin.admin", {
 			"number" : questionData.noVotes
 		} ];
 		var margin = {
-			top : 150,
+			top : 20,
 			right : 20,
 			bottom : 10,
-			left : 40
+			left : 0
 		}, width = 960 - margin.left - margin.right, height = 500 - margin.top - margin.bottom;
 
 		var x = d3.scale.ordinal().rangeRoundBands([ 0, width ], .1);
@@ -73,7 +79,7 @@ sap.ui.controller("admin.admin", {
 
 		var xAxis = d3.svg.axis().scale(x).orient("bottom");
 
-		var yAxis = d3.svg.axis().scale(y).orient("left").ticks(10, "%");
+		var yAxis = d3.svg.axis().scale(y).orient("left").ticks(10);
 
 		var svg = d3.select("#admin--chart");
 
@@ -107,11 +113,105 @@ sap.ui.controller("admin.admin", {
 	},
 
 	fnDeleteQuestion : function(evt) {
-		alert("delete item");
+
+		var sourcePath = evt.getSource().getBindingContext().getPath();
+
+		var questionModel = this.getView().getModel();
+
+		var questionData = questionModel.getProperty(sourcePath);
+
+		if (!this._busyDialog) {
+			this._busyDialog = sap.ui.xmlfragment("admin.busyDialog", this);
+			this.getView().addDependent(this._busyDialog);
+		}
+
+		this._busyDialog.open();
+		var thisView = this;
+		$.ajax({
+			url : questionData.resourceLink,
+			type : "DELETE",
+			dataType : "json",
+			async : true,
+			success : reloadQuestions,
+			error : function(xhr, ajaxOptions, thrownError) {
+
+				var msg = "";
+				switch (xhr.status) {
+				case 404:
+					msg = "Question not found, may already have been deleted";
+
+				default:
+					msg = xhr.statusText;
+					break;
+				}
+				sap.m.MessageToast.show(msg);
+				thisView._busyDialog.close();
+				thisView.fnRefresh();
+			}
+		});
+
+		function reloadQuestions() {
+			thisView._busyDialog.close();
+			thisView.fnRefresh();
+		}
+
 	},
 
 	fnCreateQuestion : function() {
-		alert("create question");
+		this.createQuestionDialog.open();
+	},
+
+	fnSaveQuestion : function() {
+		var createQuestionModel = this.createQuestionDialog.getModel();
+
+		var data = createQuestionModel.getProperty("/");
+
+		if (data.questionText == "" || data.secondsUntilExpiry == "") {
+			sap.m.MessageToast.show("Please ensure all fields correctly populated");
+		} else {
+			if (!this._busyDialog) {
+				this._busyDialog = sap.ui.xmlfragment("admin.busyDialog", this);
+				this.getView().addDependent(this._busyDialog);
+			}
+
+			this._busyDialog.open();
+
+			var thisView = this;
+			$.ajax({
+				url : "a/createQuestion",
+				type : "POST",
+				dataType : "json",
+				contentType : "application/json",
+				data : JSON.stringify(data),
+				async : true,
+				success : reloadQuestions,
+				error : function(xhr, ajaxOptions, thrownError) {
+
+					var msg = "";
+					switch (xhr.status) {
+					case 400:
+						msg = "Question not created, check that seconds is a number (no text) greater than zero";
+
+					default:
+						msg = xhr.statusText;
+						break;
+					}
+					thisView._busyDialog.close();
+					sap.m.MessageToast.show(msg);
+				}
+			});
+		}
+
+		function reloadQuestions() {
+			thisView._busyDialog.close();
+			thisView.createQuestionDialog.close();
+			thisView.fnRefresh();
+		}
+
+	},
+
+	fnCloseDialog : function(evt) {
+		evt.getSource().getParent().close();
 	},
 	fnRefresh : function() {
 
