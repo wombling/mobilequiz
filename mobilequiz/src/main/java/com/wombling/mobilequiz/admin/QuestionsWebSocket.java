@@ -14,20 +14,19 @@ import javax.websocket.server.ServerEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.wombling.mobilequiz.api.ApiValues;
 import com.wombling.mobilequiz.pojo.QuestionList;
 import com.wombling.mobilequiz.user.QuestionService;
+import com.wombling.mobilequiz.user.QuestionServiceImpl;
 
 @ServerEndpoint(ApiValues.QUESTIONS_WEBSOCKET)
 public class QuestionsWebSocket {
 
 	Logger logger = LoggerFactory.getLogger(QuestionsWebSocket.class);
-
-	@Autowired
-	QuestionService qs;
 
 	private static Set<Session> clients = Collections
 			.synchronizedSet(new HashSet<Session>());
@@ -66,10 +65,16 @@ public class QuestionsWebSocket {
 		clients.add(session);
 
 		try {
-			sendCurrentValues(session, qs);
+
+			QuestionService qs = WebSocketSupportBean.getInstance().getQs();
+
+			if (qs != null) {
+				sendCurrentValues(session, qs);
+			}
 		} catch (IOException e) {
 			// ignore for now
 		}
+
 	}
 
 	@OnMessage

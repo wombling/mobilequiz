@@ -21,6 +21,34 @@ sap.ui.controller("admin.admin", {
 		var createQuestionModel = new sap.ui.model.json.JSONModel({});
 		this.createQuestionDialog.setModel(createQuestionModel);
 
+		// websockets
+
+		thisView = this;
+		function url(s) {
+			var l = window.location;
+			return ((l.protocol === "https:") ? "wss://" : "ws://") + l.hostname + (((l.port != 80) && (l.port != 443)) ? ":" + l.port : "")
+					+ "/mobilequiz/" + s;
+		}
+
+		var socket = new WebSocket(url("questionWebSocket"));
+		socket.onopen = function() {
+			console.log('WebSocket connection is established');
+		};
+
+		socket.onmessage = function(messageEvent) {
+			thisView._questionData = JSON.parse(messageEvent.data);
+			thisView.fnLoadQuestionList(thisView._questionData);
+			thisView.fnRenderGraph();
+		};
+
+		var config = {
+			"showGraph" : false
+		};
+
+		var configModel = new sap.ui.model.json.JSONModel(config);
+
+		this.getView().setModel(configModel, "cfg");
+
 	},
 	/**
 	 * Similar to onAfterRendering, but this hook is invoked before the
@@ -54,62 +82,80 @@ sap.ui.controller("admin.admin", {
 	fnShowGraph : function(evt) {
 
 		var sourcePath = evt.getSource().getBindingContext().getPath();
+		this._indexInModel = parseInt(sourcePath.substring(14));
 
-		var questionModel = this.getView().getModel();
+		var configModel = this.getView().getModel("cfg");
 
-		var questionData = questionModel.getProperty(sourcePath);
+		var config = configModel.getProperty("/");
 
-		var data = [ {
-			"vote" : "Yes",
-			"number" : questionData.yesVotes
-		}, {
-			"vote" : "No",
-			"number" : questionData.noVotes
-		} ];
-		var margin = {
-			top : 20,
-			right : 20,
-			bottom : 10,
-			left : 0
-		}, width = 960 - margin.left - margin.right, height = 500 - margin.top - margin.bottom;
+		config.showGraph = true;
+		configModel.setData(config);
 
-		var x = d3.scale.ordinal().rangeRoundBands([ 0, width ], .1);
+		this.fnRenderGraph();
 
-		var y = d3.scale.linear().range([ height, 0 ]);
+	},
 
-		var xAxis = d3.svg.axis().scale(x).orient("bottom");
+	fnRenderGraph : function() {
 
-		var yAxis = d3.svg.axis().scale(y).orient("left").ticks(10);
+		var configModel = this.getView().getModel("cfg");
 
-		var svg = d3.select("#admin--chart");
+		var config = configModel.getProperty("/");
 
-		svg.html("");
+		if (config.showGraph) {
 
-		svg.attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform",
-				"translate(" + margin.left + "," + margin.top + ")");
+			var questionModel = this.getView().getModel();
 
-		x.domain(data.map(function(d) {
-			return d.vote;
-		}));
-		y.domain([ 0, d3.max(data, function(d) {
-			return d.number;
-		}) ]);
+			var data = [ {
+				"vote" : "Yes",
+				"number" : questionModel.oData.questionList[this._indexInModel].yesVotes
+			}, {
+				"vote" : "No",
+				"number" : questionModel.oData.questionList[this._indexInModel].noVotes
+			} ];
+			var margin = {
+				top : 20,
+				right : 20,
+				bottom : 10,
+				left : 0
+			}, width = 960 - margin.left - margin.right, height = 500 - margin.top - margin.bottom;
 
-		svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + height + ")").call(xAxis);
+			var x = d3.scale.ordinal().rangeRoundBands([ 0, width ], .1);
 
-		svg.append("g").attr("class", "y axis").call(yAxis).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em").style(
-				"text-anchor", "end").text("Votes");
+			var y = d3.scale.linear().range([ height, 0 ]);
 
-		svg.selectAll(".bar").data(data).enter().append("rect").attr("class", function(d) {
-			return "bar bar-" + d.vote;
-		}).attr("x", function(d) {
-			return x(d.vote);
-		}).attr("width", x.rangeBand()).attr("y", function(d) {
-			return y(d.number);
-		}).attr("height", function(d) {
-			return height - y(d.number);
-		});
+			var xAxis = d3.svg.axis().scale(x).orient("bottom");
 
+			var yAxis = d3.svg.axis().scale(y).orient("left").ticks(10);
+
+			var svg = d3.select("#admin--chart");
+
+			svg.html("");
+
+			svg.attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform",
+					"translate(" + margin.left + "," + margin.top + ")");
+
+			x.domain(data.map(function(d) {
+				return d.vote;
+			}));
+			y.domain([ 0, d3.max(data, function(d) {
+				return d.number;
+			}) ]);
+
+			svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + height + ")").call(xAxis);
+
+			svg.append("g").attr("class", "y axis").call(yAxis).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em")
+					.style("text-anchor", "end").text("Votes");
+
+			svg.selectAll(".bar").data(data).enter().append("rect").attr("class", function(d) {
+				return "bar bar-" + d.vote;
+			}).attr("x", function(d) {
+				return x(d.vote);
+			}).attr("width", x.rangeBand()).attr("y", function(d) {
+				return y(d.number);
+			}).attr("height", function(d) {
+				return height - y(d.number);
+			});
+		}
 	},
 
 	fnDeleteQuestion : function(evt) {
@@ -221,7 +267,7 @@ sap.ui.controller("admin.admin", {
 			type : "GET",
 			dataType : "json",
 			async : true,
-			success : loadQuestionList,
+			success : thisView.fnLoadQuestionList,
 			error : function(xhr, ajaxOptions, thrownError) {
 
 				var msg = "";
@@ -235,78 +281,84 @@ sap.ui.controller("admin.admin", {
 				sap.m.MessageToast.show(msg);
 			}
 		});
+	},
+	fnLoadQuestionList : function(data) {
 
-		function loadQuestionList(data) {
+		if (thisView._timeouts) {
+			for (var i = 0; i < thisView._timeouts.length; i++) {
+				clearTimeout(thisView._timeouts[i]);
+			}
+		}
+		// quick reset of the timer array you just cleared
+		thisView._timeouts = [];
 
-			// sort data so latest at top
+		// sort data so latest at top
 
-			data.questionList.sort(function(a, b) {
-				var c = new Date(a.dateTimeCreated);
-				var d = new Date(b.dateTimeCreated);
-				return d - c;
-			});
+		data.questionList.sort(function(a, b) {
+			var c = new Date(a.dateTimeCreated);
+			var d = new Date(b.dateTimeCreated);
+			return d - c;
+		});
 
-			var questionModel = thisView.getView().getModel();
-			questionModel.setData(data);
+		var questionModel = thisView.getView().getModel();
+		questionModel.setData(data);
+
+		for (var i = 0; i < data.questionList.length; i++) {
+			var t = new Date();
+			t.setSeconds(t.getSeconds() + data.questionList[i].secondsRemaining);
+			data.questionList[i].expireTime = t;
+		}
+
+		questionModel.setData(data);
+		formatCountdown();
+
+		function formatCountdown() {
+
+			var data = questionModel.getProperty("/");
+			var now = new Date();
+			var countOnGoing = false;
 
 			for (var i = 0; i < data.questionList.length; i++) {
-				var t = new Date();
-				t.setSeconds(t.getSeconds() + data.questionList[i].secondsRemaining);
-				data.questionList[i].expireTime = t;
-			}
 
-			questionModel.setData(data);
-			formatCountdown();
+				var secondsToExpire = Math.floor((questionModel.getProperty("/questionList/" + i + "/expireTime") - now) / 1000);
 
-			function formatCountdown() {
-
-				var data = questionModel.getProperty("/");
-				var now = new Date();
-				var countOnGoing = false;
-
-				for (var i = 0; i < data.questionList.length; i++) {
-
-					var secondsToExpire = Math.floor((questionModel.getProperty("/questionList/" + i + "/expireTime") - now) / 1000);
-
-					if (secondsToExpire < 0) {
-						secondsToExpire = 0;
-					}
-
-					var sec_num = parseInt(secondsToExpire, 10);
-					var hours = Math.floor(sec_num / 3600);
-					var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
-					var seconds = sec_num - (hours * 3600) - (minutes * 60);
-
-					if (hours < 10) {
-						hours = "0" + hours;
-					}
-					if (minutes < 10) {
-						minutes = "0" + minutes;
-					}
-					if (seconds < 10) {
-						seconds = "0" + seconds;
-					}
-					var time = hours + ':' + minutes + ':' + seconds;
-
-					questionModel.setProperty("/questionList/" + i + "/secondsRemaining", time);
-					if (secondsToExpire > 0) {
-						countOnGoing = true;
-					}
-
+				if (secondsToExpire < 0) {
+					secondsToExpire = 0;
 				}
-				return countOnGoing;
-			}
 
-			function decreaseTimer() {
+				var sec_num = parseInt(secondsToExpire, 10);
+				var hours = Math.floor(sec_num / 3600);
+				var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+				var seconds = sec_num - (hours * 3600) - (minutes * 60);
 
-				if (formatCountdown()) {
-					setTimeout(decreaseTimer, 1000);
+				if (hours < 10) {
+					hours = "0" + hours;
 				}
+				if (minutes < 10) {
+					minutes = "0" + minutes;
+				}
+				if (seconds < 10) {
+					seconds = "0" + seconds;
+				}
+				var time = hours + ':' + minutes + ':' + seconds;
+
+				questionModel.setProperty("/questionList/" + i + "/secondsRemaining", time);
+				if (secondsToExpire > 0) {
+					countOnGoing = true;
+				}
+
 			}
-
-			setTimeout(decreaseTimer, 1000);
-
+			return countOnGoing;
 		}
+
+		function decreaseTimer() {
+
+			if (formatCountdown()) {
+				thisView._timeouts.push(setTimeout(decreaseTimer, 1000));
+			}
+		}
+
+		thisView._timeouts.push(setTimeout(decreaseTimer, 1000));
 
 	}
 
