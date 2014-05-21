@@ -75,6 +75,7 @@ span.secondsRemaining {
 div#admin--chartContainer {
 	margin-top: 20px;
 	margin-left: 40px;
+	text-align: center;
 }
 
 div#QuestionTextInput {
@@ -83,4 +84,5 @@ div#QuestionTextInput {
 
 svg#admin--chart {
 	padding-left: 40px;
+	padding-top: 10px;
 }

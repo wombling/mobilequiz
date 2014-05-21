@@ -125,7 +125,7 @@ sap.ui.controller("admin.admin", {
 
 			var xAxis = d3.svg.axis().scale(x).orient("bottom");
 
-			var yAxis = d3.svg.axis().scale(y).orient("left").ticks(10);
+			var yAxis = d3.svg.axis().scale(y).orient("left").ticks(5);
 
 			var svg = d3.select("#admin--chart");
 
@@ -143,8 +143,8 @@ sap.ui.controller("admin.admin", {
 
 			svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + height + ")").call(xAxis);
 
-			svg.append("g").attr("class", "y axis").call(yAxis).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em")
-					.style("text-anchor", "end").text("Votes");
+			svg.append("g").attr("class", "y axis").attr("transform", "translate(10,0)").call(yAxis).append("text").attr("transform", "rotate(-90)")
+					.attr("y", 6).attr("dy", ".71em").style("text-anchor", "end").text("Votes");
 
 			svg.selectAll(".bar").data(data).enter().append("rect").attr("class", function(d) {
 				return "bar bar-" + d.vote;
