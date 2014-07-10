@@ -100,7 +100,6 @@ sap.ui.controller("user.Question", {
 	//
 	// }
 	fnGetNextQuestion : function() {
-		var thisView = this;
 		$.ajax({
 			url : getRemoteSystemUrl("/b/getQuestion"),
 			type : "GET",
@@ -201,8 +200,7 @@ sap.ui.controller("user.Question", {
 	},
 	fnVote : function(yesOrNo) {
 		var questionModel = this.getView().getModel("question");
-		var thisView = this;
-
+		
 		var responseData = {
 			"questionId" : questionModel.getProperty("/id"),
 			"response" : yesOrNo
