@@ -100,6 +100,7 @@ sap.ui.controller("user.Question", {
 	//
 	// }
 	fnGetNextQuestion : function() {
+		var thisView = this;
 		$.ajax({
 			url : getRemoteSystemUrl("/b/getQuestion"),
 			type : "GET",
@@ -140,18 +141,6 @@ sap.ui.controller("user.Question", {
 				var msg = "No new question found";
 				sap.m.MessageToast.show(msg);
 			} else {
-				var msg = "Question retrieved";
-				sap.m.MessageToast.show(msg);
-
-				var t = new Date();
-				t.setSeconds(t.getSeconds() + data.secondsRemaining);
-				data.expireTime = t;
-				questionModel.setData(data);
-				formatCountdown();
-
-				var configModel = thisView.getView().getModel("cfg");
-				configModel.setProperty("/showQuestion", true);
-
 				function formatCountdown() {
 					var now = new Date();
 					var secondsToExpire = Math.floor((questionModel.getProperty("/expireTime") - now) / 1000);
@@ -177,6 +166,18 @@ sap.ui.controller("user.Question", {
 					return secondsToExpire;
 				}
 
+				var msg = "Question retrieved";
+				sap.m.MessageToast.show(msg);
+
+				var t = new Date();
+				t.setSeconds(t.getSeconds() + data.secondsRemaining);
+				data.expireTime = t;
+				questionModel.setData(data);
+				formatCountdown();
+
+				var configModel = thisView.getView().getModel("cfg");
+				configModel.setProperty("/showQuestion", true);
+
 				function decreaseTimer() {
 					var secondsToExpire = formatCountdown();
 					if (secondsToExpire <= 0) {
@@ -199,8 +200,9 @@ sap.ui.controller("user.Question", {
 		this.fnVote("NO");
 	},
 	fnVote : function(yesOrNo) {
+		var thisView = this;
 		var questionModel = this.getView().getModel("question");
-		
+
 		var responseData = {
 			"questionId" : questionModel.getProperty("/id"),
 			"response" : yesOrNo

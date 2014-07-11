@@ -5,6 +5,6 @@
 function getRemoteSystemUrl(relativeUrl) {
 	// var remoteSystem =
 	// "https://yourHCPaccountHere.hana.ondemand.com/mobilequiz";
-	var remoteSystem = "http://wombling:8080/mobilequiz";
+	var remoteSystem = window.location.href.substring(0,window.location.href.lastIndexOf("/"));
 	return remoteSystem + relativeUrl;
 }
