@@ -8,11 +8,11 @@ sap.ui.controller("admin.admin", {
 	 * 
 	 * @memberOf mobilequizuser.admin
 	 */
-	onInit : function() {
+	onInit : function() { // FIXME: code follows a logic flow(business logic)
 
 		var questionModel = new sap.ui.model.json.JSONModel({});
 
-		this.getView().setModel(questionModel);
+		this.getView().setModel(questionModel); // FIXME: put relevant code block together
 		this.fnRefresh();
 
 		this.createQuestionDialog = sap.ui.xmlfragment("admin.createQuestionDialog", this);
@@ -23,14 +23,14 @@ sap.ui.controller("admin.admin", {
 
 		// websockets
 
-		thisView = this;
+		thisView = this; // FIXME: not implicitly declared; good variable naming 
 		function url(s) {
 			var l = window.location;
 			return ((l.protocol === "https:") ? "wss://" : "ws://") + l.hostname + (((l.port != 80) && (l.port != 443)) ? ":" + l.port : "")
 					+ "/mobilequiz/" + s;
 		}
 
-		var socket = new WebSocket(url("questionWebSocket"));
+		var socket = new WebSocket(url("questionWebSocket")); // FIXME: put relevant code block together; sometimes extract to another function, e.g. initWebSocket/setupWebSocket
 		socket.onopen = function() {
 			console.log('WebSocket connection is established');
 		};
@@ -79,7 +79,9 @@ sap.ui.controller("admin.admin", {
 	// onExit: function() {
 	//
 	// }
-	fnShowGraph : function(evt) {
+	fnShowGraph : function(evt) { // FIXME: proper comment for function 
+		// FIXME: function name recently doesn't start with fn
+		// FIXME: don't leave space after function signature
 
 		var sourcePath = evt.getSource().getBindingContext().getPath();
 		this._indexInModel = parseInt(sourcePath.substring(14));
@@ -173,13 +175,13 @@ sap.ui.controller("admin.admin", {
 
 		this._busyDialog.open();
 		var thisView = this;
-		$.ajax({
+		$.ajax({ // FIXME: try to avoid ajax call without comment; or wrap in a method with a meaningful name
 			url : questionData.resourceLink,
 			type : "DELETE",
 			dataType : "json",
 			async : true,
 			success : reloadQuestions,
-			error : function(xhr, ajaxOptions, thrownError) {
+			error : function(xhr, ajaxOptions, thrownError) { // FIXME: extract similar code into a method(reuse)
 
 				var msg = "";
 				switch (xhr.status) {
@@ -196,7 +198,7 @@ sap.ui.controller("admin.admin", {
 			}
 		});
 
-		function reloadQuestions() {
+		function reloadQuestions() { // FIXME: try not to define function within function
 			thisView._busyDialog.close();
 			thisView.fnRefresh();
 		}
@@ -223,7 +225,7 @@ sap.ui.controller("admin.admin", {
 			this._busyDialog.open();
 
 			var thisView = this;
-			$.ajax({
+			$.ajax({ // FIXME: try to avoid ajax call without comment; or wrap in a method with a meaningful name
 				url : "a/createQuestion",
 				type : "POST",
 				dataType : "json",
@@ -231,7 +233,7 @@ sap.ui.controller("admin.admin", {
 				data : JSON.stringify(data),
 				async : true,
 				success : reloadQuestions,
-				error : function(xhr, ajaxOptions, thrownError) {
+				error : function(xhr, ajaxOptions, thrownError) { // FIXME: extract similar code into a method(reuse)
 
 					var msg = "";
 					switch (xhr.status) {
@@ -248,7 +250,7 @@ sap.ui.controller("admin.admin", {
 			});
 		}
 
-		function reloadQuestions() {
+		function reloadQuestions() { // FIXME: try not to define function within function
 			thisView._busyDialog.close();
 			thisView.createQuestionDialog.close();
 			thisView.fnRefresh();
@@ -262,13 +264,13 @@ sap.ui.controller("admin.admin", {
 	fnRefresh : function() {
 
 		var thisView = this;
-		$.ajax({
+		$.ajax({ // FIXME: try to avoid ajax call without comment; or wrap in a method with a meaningful name
 			url : "a/listQuestions",
 			type : "GET",
 			dataType : "json",
 			async : true,
 			success : thisView.fnLoadQuestionList,
-			error : function(xhr, ajaxOptions, thrownError) {
+			error : function(xhr, ajaxOptions, thrownError) { // FIXME: extract similar code into a method(reuse)
 
 				var msg = "";
 				switch (xhr.status) {
@@ -282,7 +284,7 @@ sap.ui.controller("admin.admin", {
 			}
 		});
 	},
-	fnLoadQuestionList : function(data) {
+	fnLoadQuestionList : function(data) { // FIXME: comment for function; blank line between functions
 
 		if (thisView._timeouts) {
 			for (var i = 0; i < thisView._timeouts.length; i++) {
@@ -312,7 +314,7 @@ sap.ui.controller("admin.admin", {
 		questionModel.setData(data);
 		formatCountdown();
 
-		function formatCountdown() {
+		function formatCountdown() { // FIXME: try not to define function within function
 
 			var data = questionModel.getProperty("/");
 			var now = new Date();
@@ -351,7 +353,7 @@ sap.ui.controller("admin.admin", {
 			return countOnGoing;
 		}
 
-		function decreaseTimer() {
+		function decreaseTimer() { // FIXME: try not to define function within function
 
 			if (formatCountdown()) {
 				thisView._timeouts.push(setTimeout(decreaseTimer, 1000));

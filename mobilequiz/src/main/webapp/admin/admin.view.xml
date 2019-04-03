@@ -1,5 +1,6 @@
 <core:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc"
 	xmlns="sap.m" controllerName="admin.admin" xmlns:html="http://www.w3.org/1999/xhtml">
+	<!-- FIXME: good practice to manage xml naming space & controller name -->
 	<Page title="Quiz Admin">
 		<content>
 			<Bar>
